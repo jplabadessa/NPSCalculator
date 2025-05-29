@@ -91,6 +91,9 @@
       padding-top: 15px;
       border-top: 1px solid var(--input-border);
     }
+    .hidden {
+      display: none;
+    }
     footer {
       margin-top: 30px;
       font-size: 14px;
@@ -166,15 +169,15 @@
     <label for="detractors">Detratores (0-6):</label>
     <input type="number" id="detractors" value="0" min="0" oninput="calcularNPS()" />
 
-    <label for="meta">Meta de NPS:</label>
-    <input type="number" id="meta" value="50" min="-100" max="100" oninput="calcularNPS()" />
+    <label for="meta">Meta de NPS (opcional):</label>
+    <input type="number" id="meta" value="0" min="0" max="100" oninput="calcularNPS()" />
 
     <div class="result">
       <div id="npsClassification"></div>
       <div id="npsAtual" class="nps-score">0</div>
       <div id="npsDescription"></div>
       
-      <div class="meta-info">
+      <div id="metaSection" class="meta-info hidden">
         <div id="metaInfo"></div>
         <div id="requiredPromoters"></div>
       </div>
@@ -228,40 +231,47 @@
       // Classificar o NPS
       const classificationElement = document.getElementById("npsClassification");
       const descriptionElement = document.getElementById("npsDescription");
+      const metaSectionElement = document.getElementById("metaSection");
+      const metaInfoElement = document.getElementById("metaInfo");
+      const requiredPromotersElement = document.getElementById("requiredPromoters");
       
       // Resetar classes
       npsAtualElement.className = "nps-score";
       
-      if (nps >= 70) {
-        npsAtualElement.classList.add("good");
-        classificationElement.textContent = "NPS Excelente";
-        descriptionElement.textContent = "Seus clientes são altamente leais e promotores ativos da sua marca.";
-      } else if (nps >= 50) {
-        npsAtualElement.classList.add("good");
-        classificationElement.textContent = "NPS Bom";
-        descriptionElement.textContent = "Você tem mais promotores que detratores, mas ainda pode melhorar.";
-      } else if (nps >= 0) {
-        npsAtualElement.classList.add("neutral");
-        classificationElement.textContent = "NPS Razoável";
-        descriptionElement.textContent = "Há espaço para melhorias para aumentar a lealdade dos clientes.";
-      } else {
-        npsAtualElement.classList.add("bad");
-        classificationElement.textContent = "NPS Ruim";
-        descriptionElement.textContent = "Você tem mais detratores que promotores. Ação necessária.";
-      }
-      
-      // Calcular meta
-      const metaInfoElement = document.getElementById("metaInfo");
-      const requiredPromotersElement = document.getElementById("requiredPromoters");
-      
-      if (T === 0) {
-        metaInfoElement.textContent = "Informe os valores para calcular a meta.";
-        requiredPromotersElement.textContent = "";
+      // Se não há meta definida (M = 0)
+      if (M === 0) {
+        metaSectionElement.classList.add("hidden");
+        
+        // Classificação padrão sem meta
+        if (nps >= 70) {
+          npsAtualElement.classList.add("good");
+          classificationElement.textContent = "NPS Excelente";
+          descriptionElement.textContent = "Seus clientes são altamente leais e promotores ativos da sua marca.";
+        } else if (nps >= 50) {
+          npsAtualElement.classList.add("good");
+          classificationElement.textContent = "NPS Bom";
+          descriptionElement.textContent = "Você tem mais promotores que detratores, mas ainda pode melhorar.";
+        } else if (nps >= 0) {
+          npsAtualElement.classList.add("neutral");
+          classificationElement.textContent = "NPS Razoável";
+          descriptionElement.textContent = "Há espaço para melhorias para aumentar a lealdade dos clientes.";
+        } else {
+          npsAtualElement.classList.add("bad");
+          classificationElement.textContent = "NPS Ruim";
+          descriptionElement.textContent = "Você tem mais detratores que promotores. Ação necessária.";
+        }
+        
         return;
       }
       
+      // Se há meta definida (M > 0)
+      metaSectionElement.classList.remove("hidden");
+      
+      // Classificar baseado na meta do usuário
       if (nps >= M) {
-        metaInfoElement.textContent = `✅ Meta de ${M} já atingida!`;
+        npsAtualElement.classList.add("good");
+        classificationElement.textContent = "Meta Atingida";
+        descriptionElement.textContent = "Seu NPS está igual ou acima da meta definida.";
         
         // Calcular quantos neutros/detratores podem ser adicionados sem perder a meta
         let maxNeutros = 0;
@@ -276,18 +286,21 @@
         }
         maxDetratores = Math.max(0, maxDetratores - 1);
         
+        metaInfoElement.textContent = `✅ Meta de ${M} atingida`;
         requiredPromotersElement.innerHTML = `Você pode adicionar até:<br>
           ${maxNeutros} neutros ou ${maxDetratores} detratores<br>
           sem ficar abaixo da meta.`;
       } else {
-        metaInfoElement.textContent = `Meta: ${M} (faltam ${M - nps} pontos)`;
+        npsAtualElement.classList.add("bad");
+        classificationElement.textContent = "Abaixo da Meta";
+        descriptionElement.textContent = "Seu NPS está abaixo da meta definida.";
         
         // Calcular promotores necessários para atingir a meta
-        // Fórmula: x = (M*T + D*100 - P*100) / (100 - M)
         const requiredPromoters = Math.ceil(
           (M * T + D * 100 - P * 100) / (100 - M)
         );
         
+        metaInfoElement.textContent = `Meta: ${M}`;
         requiredPromotersElement.textContent = `Promotores adicionais necessários: ${requiredPromoters}`;
       }
     }
