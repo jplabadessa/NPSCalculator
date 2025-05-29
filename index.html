@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de NPS</title>
+  <!-- AdSense Script -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=SEU_ID"
+     crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #121212;
+      --card: #1f1f1f;
+      --accent: #00c896;
+      --text: #ffffff;
+      --input-bg: #2a2a2a;
+      --input-border: #444;
+      --good: #00c896;
+      --neutral: #ffb74d;
+      --bad: #f44336;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: var(--card);
+      padding: 30px 20px;
+      border-radius: 16px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 0 20px rgba(0, 200, 150, 0.2);
+      margin-top: 10px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: var(--accent);
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--text);
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+    .result {
+      background: #101010;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 10px;
+      font-size: 18px;
+      text-align: center;
+      border-left: 5px solid var(--accent);
+    }
+    .nps-score {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    .good {
+      color: var(--good);
+    }
+    .neutral {
+      color: var(--neutral);
+    }
+    .bad {
+      color: var(--bad);
+    }
+    .meta-info {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid var(--input-border);
+    }
+    footer {
+      margin-top: 30px;
+      font-size: 14px;
+      text-align: center;
+    }
+    footer a {
+      color: #00c896;
+      text-decoration: none;
+      margin: 0 10px;
+      cursor: pointer;
+    }
+    ins.adsbygoogle {
+      display: block;
+      margin: 20px auto;
+      text-align: center;
+    }
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      display: none;
+    }
+    .modal-content {
+      background: #1f1f1f;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 90%;
+      max-height: 80%;
+      overflow-y: auto;
+      color: var(--text);
+      position: relative;
+    }
+    .modal-content h1 {
+      color: var(--accent);
+      font-size: 20px;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 20px;
+      color: var(--text);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <ins class="adsbygoogle"
+    style="display:block"
+    data-ad-client="SEU_ID"
+    data-ad-slot="SLOT_ID"
+    data-ad-format="auto"
+    data-full-width-responsive="true"></ins>
+  <script>
+       (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+
+  <div class="container">
+    <h2>Calculadora de NPS 💡</h2>
+
+    <label for="promoters">Promotores (9-10):</label>
+    <input type="number" id="promoters" value="0" min="0" oninput="calcularNPS()" />
+
+    <label for="neutrals">Neutros (7-8):</label>
+    <input type="number" id="neutrals" value="0" min="0" oninput="calcularNPS()" />
+
+    <label for="detractors">Detratores (0-6):</label>
+    <input type="number" id="detractors" value="0" min="0" oninput="calcularNPS()" />
+
+    <label for="meta">Meta de NPS:</label>
+    <input type="number" id="meta" value="50" min="-100" max="100" oninput="calcularNPS()" />
+
+    <div class="result">
+      <div id="npsClassification"></div>
+      <div id="npsAtual" class="nps-score">0</div>
+      <div id="npsDescription"></div>
+      
+      <div class="meta-info">
+        <div id="metaInfo"></div>
+        <div id="requiredPromoters"></div>
+      </div>
+    </div>
+  </div>
+
+  <ins class="adsbygoogle"
+    style="display:block"
+    data-ad-client="SEU_ID"
+    data-ad-slot="SLOT_ID"
+    data-ad-format="auto"
+    data-full-width-responsive="true"></ins>
+  <script>
+       (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+
+  <footer>
+    <p>
+      <a onclick="abrirModal('politica')">Política de Privacidade</a> |
+      <a onclick="abrirModal('termos')">Termos de Uso</a>
+    </p>
+  </footer>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content" id="modal-content">
+      <span class="close-btn" onclick="fecharModal()">&times;</span>
+      <div id="modal-text"></div>
+    </div>
+  </div>
+
+  <script>
+    function calcularNPS() {
+      const P = parseInt(document.getElementById("promoters").value) || 0;
+      const N = parseInt(document.getElementById("neutrals").value) || 0;
+      const D = parseInt(document.getElementById("detractors").value) || 0;
+      const M = parseInt(document.getElementById("meta").value) || 0;
+      const T = P + N + D;
+      
+      // Calcular NPS
+      let nps = 0;
+      if (T > 0) {
+        nps = ((P - D) / T) * 100;
+      }
+      nps = Math.round(nps);
+      
+      // Atualizar exibição do NPS
+      const npsAtualElement = document.getElementById("npsAtual");
+      npsAtualElement.textContent = nps;
+      
+      // Classificar o NPS
+      const classificationElement = document.getElementById("npsClassification");
+      const descriptionElement = document.getElementById("npsDescription");
+      
+      // Resetar classes
+      npsAtualElement.className = "nps-score";
+      
+      if (nps >= 70) {
+        npsAtualElement.classList.add("good");
+        classificationElement.textContent = "NPS Excelente";
+        descriptionElement.textContent = "Seus clientes são altamente leais e promotores ativos da sua marca.";
+      } else if (nps >= 50) {
+        npsAtualElement.classList.add("good");
+        classificationElement.textContent = "NPS Bom";
+        descriptionElement.textContent = "Você tem mais promotores que detratores, mas ainda pode melhorar.";
+      } else if (nps >= 0) {
+        npsAtualElement.classList.add("neutral");
+        classificationElement.textContent = "NPS Razoável";
+        descriptionElement.textContent = "Há espaço para melhorias para aumentar a lealdade dos clientes.";
+      } else {
+        npsAtualElement.classList.add("bad");
+        classificationElement.textContent = "NPS Ruim";
+        descriptionElement.textContent = "Você tem mais detratores que promotores. Ação necessária.";
+      }
+      
+      // Calcular meta
+      const metaInfoElement = document.getElementById("metaInfo");
+      const requiredPromotersElement = document.getElementById("requiredPromoters");
+      
+      if (T === 0) {
+        metaInfoElement.textContent = "Informe os valores para calcular a meta.";
+        requiredPromotersElement.textContent = "";
+        return;
+      }
+      
+      if (nps >= M) {
+        metaInfoElement.textContent = `✅ Meta de ${M} já atingida!`;
+        
+        // Calcular quantos neutros/detratores podem ser adicionados sem perder a meta
+        let maxNeutros = 0;
+        while (((P - D) / (T + maxNeutros)) * 100 >= M) {
+          maxNeutros++;
+        }
+        maxNeutros = Math.max(0, maxNeutros - 1);
+        
+        let maxDetratores = 0;
+        while (((P - D - maxDetratores) / (T + maxDetratores)) * 100 >= M) {
+          maxDetratores++;
+        }
+        maxDetratores = Math.max(0, maxDetratores - 1);
+        
+        requiredPromotersElement.innerHTML = `Você pode adicionar até:<br>
+          ${maxNeutros} neutros ou ${maxDetratores} detratores<br>
+          sem ficar abaixo da meta.`;
+      } else {
+        metaInfoElement.textContent = `Meta: ${M} (faltam ${M - nps} pontos)`;
+        
+        // Calcular promotores necessários para atingir a meta
+        // Fórmula: x = (M*T + D*100 - P*100) / (100 - M)
+        const requiredPromoters = Math.ceil(
+          (M * T + D * 100 - P * 100) / (100 - M)
+        );
+        
+        requiredPromotersElement.textContent = `Promotores adicionais necessários: ${requiredPromoters}`;
+      }
+    }
+
+    function abrirModal(tipo) {
+      const modal = document.getElementById("modal");
+      const texto = document.getElementById("modal-text");
+      if (tipo === 'politica') {
+        texto.innerHTML = `
+          <h1>Política de Privacidade</h1>
+          <p>Utilizamos o Google AdSense para exibir anúncios. O Google pode usar cookies para personalizar os anúncios com base em suas visitas anteriores a este e a outros sites.</p>
+          <p>Você pode desativar a personalização de anúncios acessando as configurações de anúncios do Google em <a href="https://www.google.com/settings/ads" target="_blank">google.com/settings/ads</a>.</p>
+          <p>Ao utilizar nosso site, você concorda com o uso de cookies e dados conforme descrito nesta política.</p>`;
+      } else if (tipo === 'termos') {
+        texto.innerHTML = `
+          <h1>Termos de Uso</h1>
+          <p>Esta ferramenta é fornecida como está, sem garantias. Os resultados apresentados são estimativas com base nos dados inseridos e não substituem análises profissionais.</p>
+          <p>O uso do site implica na aceitação total destes termos.</p>`;
+      }
+      modal.style.display = "flex";
+    }
+
+    function fecharModal() {
+      document.getElementById("modal").style.display = "none";
+    }
+
+    // Calcular NPS ao carregar a página
+    window.onload = calcularNPS;
+  </script>
+</body>
+</html>
