@@ -147,16 +147,6 @@
 </head>
 <body>
 
-  <ins class="adsbygoogle"
-    style="display:block"
-    data-ad-client="SEU_ID"
-    data-ad-slot="SLOT_ID"
-    data-ad-format="auto"
-    data-full-width-responsive="true"></ins>
-  <script>
-       (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
-
   <div class="container">
     <h2>Calculadora de NPS 💡</h2>
 
@@ -174,7 +164,7 @@
 
     <div class="result">
       <div id="npsClassification"></div>
-      <div id="npsAtual" class="nps-score">0</div>
+      <div id="npsAtual" class="nps-score">0.00</div>
       <div id="npsDescription"></div>
       
       <div id="metaSection" class="meta-info hidden">
@@ -183,16 +173,6 @@
       </div>
     </div>
   </div>
-
-  <ins class="adsbygoogle"
-    style="display:block"
-    data-ad-client="SEU_ID"
-    data-ad-slot="SLOT_ID"
-    data-ad-format="auto"
-    data-full-width-responsive="true"></ins>
-  <script>
-       (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
 
   <footer>
     <p>
@@ -217,16 +197,16 @@
       const M = parseInt(document.getElementById("meta").value) || 0;
       const T = P + N + D;
       
-      // Calcular NPS
+      // Calcular NPS com 2 casas decimais
       let nps = 0;
       if (T > 0) {
         nps = ((P - D) / T) * 100;
+        nps = Math.round(nps * 100) / 100; // Arredonda para 2 casas decimais
       }
-      nps = Math.round(nps);
       
-      // Atualizar exibição do NPS
+      // Atualizar exibição do NPS com 2 casas decimais
       const npsAtualElement = document.getElementById("npsAtual");
-      npsAtualElement.textContent = nps;
+      npsAtualElement.textContent = nps.toFixed(2);
       
       // Classificar o NPS
       const classificationElement = document.getElementById("npsClassification");
@@ -275,13 +255,13 @@
         
         // Calcular quantos neutros/detratores podem ser adicionados sem perder a meta
         let maxNeutros = 0;
-        while (((P - D) / (T + maxNeutros)) * 100 >= M) {
+        while ((Math.round(((P - D) / (T + maxNeutros)) * 10000) / 100) >= M) {
           maxNeutros++;
         }
         maxNeutros = Math.max(0, maxNeutros - 1);
         
         let maxDetratores = 0;
-        while (((P - D - maxDetratores) / (T + maxDetratores)) * 100 >= M) {
+        while ((Math.round(((P - D - maxDetratores) / (T + maxDetratores)) * 10000) / 100) >= M) {
           maxDetratores++;
         }
         maxDetratores = Math.max(0, maxDetratores - 1);
@@ -295,7 +275,7 @@
         classificationElement.textContent = "Abaixo da Meta";
         descriptionElement.textContent = "Seu NPS está abaixo da meta definida.";
         
-        // Calcular promotores necessários para atingir a meta
+        // Calcular promotores necessários para atingir a meta com 2 casas decimais
         const requiredPromoters = Math.ceil(
           (M * T + D * 100 - P * 100) / (100 - M)
         );
